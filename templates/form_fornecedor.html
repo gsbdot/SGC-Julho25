@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ titulo_pagina }}</h2>
+    <hr class="my-4">
+
+    <form method="POST" action="" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.nome_fantasia.label(class="form-label") }}
+                {{ form.nome_fantasia(class="form-control" + (" is-invalid" if form.nome_fantasia.errors else "")) }}
+                {% if form.nome_fantasia.errors %}
+                    <div class="invalid-feedback d-block">{% for error in form.nome_fantasia.errors %}<span>{{ error }}</span><br>{% endfor %}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.razao_social.label(class="form-label") }}
+                {{ form.razao_social(class="form-control" + (" is-invalid" if form.razao_social.errors else "")) }}
+                {% if form.razao_social.errors %}
+                    <div class="invalid-feedback d-block">{% for error in form.razao_social.errors %}<span>{{ error }}</span><br>{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.cnpj.label(class="form-label") }}
+                {{ form.cnpj(id="cnpj", class="form-control" + (" is-invalid" if form.cnpj.errors else ""), placeholder="00.000.000/0000-00", autocomplete="off") }}
+                {% if form.cnpj.errors %}
+                    <div class="invalid-feedback d-block">{% for error in form.cnpj.errors %}<span>{{ error }}</span><br>{% endfor %}</div>
+                {% endif %}
+            </div>
+             <div class="col-md-6 mb-3">
+                {{ form.telefone.label(class="form-label") }}
+                {{ form.telefone(class="form-control" + (" is-invalid" if form.telefone.errors else ""), placeholder="(21) 99999-9999") }}
+                {% if form.telefone.errors %}
+                    <div class="invalid-feedback d-block">{% for error in form.telefone.errors %}<span>{{ error }}</span><br>{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="contato@empresa.com") }}
+                {% if form.email.errors %}
+                    <div class="invalid-feedback d-block">{% for error in form.email.errors %}<span>{{ error }}</span><br>{% endfor %}</div>
+                {% endif %}
+            </div>
+             <div class="col-md-6 mb-3">
+                {{ form.endereco.label(class="form-label") }}
+                {{ form.endereco(class="form-control" + (" is-invalid" if form.endereco.errors else "")) }}
+                {% if form.endereco.errors %}
+                    <div class="invalid-feedback d-block">{% for error in form.endereco.errors %}<span>{{ error }}</span><br>{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-4">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('listar_fornecedores') }}" class="btn btn-secondary ms-2">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cnpjInput = document.getElementById('cnpj');
+    if (cnpjInput) {
+        cnpjInput.addEventListener('input', function (e) {
+            let value = e.target.value;
+            // Remove tudo que não for letra ou número
+            value = value.replace(/[^A-Za-z0-9]/g, '');
+
+            let formattedValue = '';
+            if (value.length > 12) {
+                formattedValue = `${value.substring(0, 2)}.${value.substring(2, 5)}.${value.substring(5, 8)}/${value.substring(8, 12)}-${value.substring(12, 14)}`;
+            } else if (value.length > 8) {
+                formattedValue = `${value.substring(0, 2)}.${value.substring(2, 5)}.${value.substring(5, 8)}/${value.substring(8)}`;
+            } else if (value.length > 5) {
+                formattedValue = `${value.substring(0, 2)}.${value.substring(2, 5)}.${value.substring(5, 8)}`;
+            } else if (value.length > 2) {
+                formattedValue = `${value.substring(0, 2)}.${value.substring(2, 5)}`;
+            } else {
+                formattedValue = value;
+            }
+            
+            e.target.value = formattedValue;
+        });
+    }
+});
+</script>
+{% endblock %}

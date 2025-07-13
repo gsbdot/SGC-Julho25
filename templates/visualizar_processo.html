@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h2>{{ titulo_pagina if titulo_pagina else "Detalhes do Processo" }}</h2>
+        <div>
+            {% if current_user.role in ['admin', 'gestor'] %}
+            <a href="{{ url_for('editar_processo', processo_id=processo.id) }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-pencil-alt"></i> Editar Processo
+            </a>
+            {% endif %}
+            <a href="{{ url_for('listar_processos') }}" class="btn btn-secondary btn-sm ms-2">Voltar para Lista</a>
+        </div>
+    </div>
+    <hr class="my-4">
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Dados do Processo</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Número/Ano:</dt>
+                <dd class="col-sm-9 fw-bold">{{ processo.numero_processo }}/{{ processo.ano }}</dd>
+                
+                <dt class="col-sm-3">Descrição/Objeto:</dt>
+                <dd class="col-sm-9">{{ processo.descricao|default('Não informado', true) }}</dd>
+
+                <dt class="col-sm-3">Data de Cadastro:</dt>
+                <dd class="col-sm-9">{{ processo.criado_em.strftime('%d/%m/%Y %H:%M') }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><h5>Atas de Registro de Preço Vinculadas</h5></div>
+        <div class="card-body p-0">
+            {% if processo.atas.count() > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light"><tr><th>Nº/Ano</th><th>Descrição</th><th>Validade</th></tr></thead>
+                    <tbody>
+                        {% for ata in processo.atas %}
+                        <tr>
+                            <td><a href="{{ url_for('listar_itens_da_ata', ata_id=ata.id) }}">{{ ata.numero_ata }}/{{ ata.ano }}</a></td>
+                            <td>{{ ata.descricao|truncate(80, true)|default('-', true) }}</td>
+                            <td>{{ ata.data_validade.strftime('%d/%m/%Y') if ata.data_validade else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="card-body"><p class="mb-0 text-muted">Nenhuma ata vinculada a este processo.</p></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><h5>Contratos Vinculados</h5></div>
+        <div class="card-body p-0">
+            {% if processo.contratos.count() > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light"><tr><th>Nº Contrato</th><th>Objeto</th><th>Fim da Vigência</th><th class="text-end">Valor Global</th></tr></thead>
+                    <tbody>
+                        {% for contrato in processo.contratos %}
+                        <tr>
+                            <td><a href="{{ url_for('visualizar_contrato', contrato_id=contrato.id) }}">{{ contrato.numero_contrato }}</a></td>
+                            <td>{{ contrato.objeto|truncate(60, true) }}</td>
+                            <td>{{ contrato.data_fim_vigencia.strftime('%d/%m/%Y') if contrato.data_fim_vigencia else '-' }}</td>
+                            <td class="text-end">{{ contrato.valor_global_contrato|br_currency }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="card-body"><p class="mb-0 text-muted">Nenhum contrato vinculado a este processo.</p></div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header"><h5>Contratinhos e Empenhos Vinculados</h5></div>
+        <div class="card-body p-0">
+            {% set documentos_consumo = processo.contratinhos|list + processo.empenhos|list %}
+            {% if documentos_consumo %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light"><tr><th>Tipo</th><th>Número/Doc.</th><th>Data Emissão</th><th>Unidade</th><th class="text-end">Valor Total</th></tr></thead>
+                    <tbody>
+                        {% for doc in documentos_consumo|sort(attribute='data_emissao', reverse=true) %}
+                        <tr>
+                            <td>
+                                {% if doc.__class__.__name__ == 'Contratinho' %}
+                                    <span class="badge bg-success">Contratinho</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Empenho</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if doc.__class__.__name__ == 'Contratinho' %}
+                                    <a href="{{ url_for('visualizar_contratinho', contratinho_id=doc.id) }}">{{ doc.numero_contratinho }}</a>
+                                {% else %}
+                                    <a href="{{ url_for('visualizar_empenho', empenho_id=doc.id) }}">{{ doc.numero_empenho }}</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ doc.data_emissao.strftime('%d/%m/%Y') if doc.data_emissao else '-' }}</td>
+                            <td>{{ doc.unidade_saude_solicitante.nome_unidade|default('N/A', true) }}</td>
+                            <td class="text-end">{{ (doc.valor_total_manual if doc.valor_total_manual is not none else doc.valor_total_itens)|br_currency }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="card-body"><p class="mb-0 text-muted">Nenhum contratinho ou empenho vinculado a este processo.</p></div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% set documento = processo %}
+    {% include '_comentarios.html' %}
+
+{% endblock %}

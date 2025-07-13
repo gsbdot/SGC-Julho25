@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ titulo_pagina if titulo_pagina else "Relatório por Fornecedor" }}</h2>
+    <p class="text-muted">Selecione um fornecedor para gerar um relatório em PDF com seus dados cadastrais e todos os documentos vinculados.</p>
+    <hr class="my-4">
+
+    <form method="POST" action="" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                {{ form.fornecedor.label(class="form-label") }}
+                {{ form.fornecedor(class="form-select" + (" is-invalid" if form.fornecedor.errors else "")) }}
+                {% if form.fornecedor.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.fornecedor.errors %}<span>{{ error }}</span><br>{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary ms-2">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ titulo_pagina|default('Resultados da Busca') }}</h2>
+
+    <div class="alert alert-secondary">
+        {% if total_found > 0 %}
+            {{ total_found }} {{ 'resultado encontrado' if total_found == 1 else 'resultados encontrados' }} para a busca: "<strong>{{ query }}</strong>".
+        {% else %}
+            Sua busca por "<strong>{{ query }}</strong>" não retornou nenhum resultado. Tente usar termos diferentes ou mais gerais.
+        {% endif %}
+    </div>
+
+    {% if results %}
+        <div class="list-group">
+            {% for result in results %}
+                <a href="{{ result.url }}" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            {# Bloco para exibir o tipo do resultado com um ícone correspondente #}
+                            {% set icon_class = 'fa-file-alt' %} {# Icone Padrão #}
+                            {% set badge_color = 'bg-secondary' %}
+
+                            {% if result.tipo == 'Processo' %}
+                                {% set icon_class = 'fa-folder-open' %}
+                                {% set badge_color = 'bg-primary' %}
+                            {% elif result.tipo == 'Fornecedor' %}
+                                {% set icon_class = 'fa-building' %}
+                                {% set badge_color = 'bg-dark' %}
+                            {% elif result.tipo == 'Ata de Registro' %}
+                                {% set icon_class = 'fa-file-alt' %}
+                                {% set badge_color = 'bg-info' %}
+                            {% elif result.tipo == 'Item de Ata' %}
+                                {% set icon_class = 'fa-sitemap' %}
+                                {% set badge_color = 'bg-light text-dark' %}
+                            {% elif result.tipo == 'Contrato' %}
+                                {% set icon_class = 'fa-file-contract' %}
+                                {% set badge_color = 'bg-success' %}
+                            {% elif result.tipo == 'Contratinho' %}
+                                {% set icon_class = 'fa-file-invoice' %}
+                                {% set badge_color = 'bg-warning text-dark' %}
+                            {% elif result.tipo == 'Empenho' %}
+                                {% set icon_class = 'fa-money-check-alt' %}
+                                {% set badge_color = 'bg-danger' %}
+                            {% endif %}
+                            
+                            <span class="badge {{ badge_color }} me-2">
+                                <i class="fas {{ icon_class }}"></i>
+                                {{ result.tipo }}
+                            </span>
+                            
+                            {{ result.titulo }}
+                        </h5>
+                    </div>
+                    <p class="mb-1 ms-2">{{ result.descricao|truncate(200, True)|default('', True) }}</p>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+        </a>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h2 class="h3 mb-0">{{ titulo_pagina }}</h2>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Visão Geral do SGC-Saúde</h4>
+        <p class="card-text">
+            O SGC-Saúde (Sistema de Gestão de Contratos) é uma aplicação web desenvolvida em Python com o framework Flask, projetada para ser uma base para a gestão de Atas de Registro de Preço, Contratos, Empenhos e o consumo de itens/serviços vinculados. O sistema organiza e centraliza o controle de documentos e o fluxo de gastos, incluindo um sistema de cotas por unidade de saúde para um acompanhamento detalhado.
+            <br>
+            <strong>Este sistema foi desenvolvido como um projeto piloto para a Secretaria de Saúde de Nova Friburgo.</strong>
+        </p>
+        <hr>
+
+        <h4 class="card-title mt-4">Como Usar o Sistema</h4>
+        <dl>
+            <dt>1. Ponto de Partida</dt>
+            <dd>Para começar, é essencial que os dados básicos estejam cadastrados. Inicie cadastrando as <strong>Unidades de Saúde</strong> e os <strong>Fornecedores</strong>, pois eles serão necessários ao criar os demais documentos.</dd>
+        
+            <dt class="mt-3">2. Entendendo os Documentos</dt>
+            <dd>
+                <ul class="list-unstyled">
+                    <li><strong>- Contratos:</strong> São documentos independentes, com objeto, valor e itens próprios. Podem ter sua vigência e valor alterados por meio de <strong>Termos Aditivos</strong>.</li>
+                    <li class="mt-2"><strong>- Contratinhos e Empenhos:</strong> São documentos que servem para registrar o <strong>consumo de itens</strong> de uma <strong>Ata de Registro de Preço</strong> já existente, debitando o saldo do item e da cota da unidade solicitante.</li>
+                </ul>
+            </dd>
+        </dl>
+        <hr>
+
+        <div class="mt-4">
+            <h5 class="card-title">Desenvolvimento e Autoria</h5>
+            <p class="card-text">
+                Este sistema foi desenvolvido por:
+            </p>
+            <div class="d-flex align-items-center">
+                <i class="fas fa-user-circle fa-3x me-3 text-secondary"></i>
+                <div>
+                    <strong>Gabriel da Silva Barbosa</strong><br>
+                    Analista Processual II<br>
+                    Matrícula: 301.320<br>
+                    <a href="mailto:gsbarbosa90@gmail.com">gsbarbosa90@gmail.com</a><br>
+                    <small class="text-muted">Copyright (c) 2025 Gabriel da Silva Barbosa</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-end">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
