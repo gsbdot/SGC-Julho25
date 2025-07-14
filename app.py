@@ -113,6 +113,27 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 # --- COMANDOS CLI ---
+@app.cli.command("init-db")
+def init_db_command():
+    """Verifica e cria o usuário admin inicial a partir de variáveis de ambiente."""
+    if User.query.filter_by(role='admin').first():
+        print("Usuário administrador já existe. Nenhuma ação foi tomada.")
+        return
+
+    username = os.environ.get('ADMIN_USERNAME')
+    password = os.environ.get('ADMIN_PASSWORD')
+
+    if not username or not password:
+        print("ERRO: As variáveis de ambiente ADMIN_USERNAME e ADMIN_PASSWORD não foram definidas. O usuário não foi criado.")
+        return
+
+    print(f"Criando usuário administrador inicial: {username}...")
+    admin_user = User(username=username, role='admin')
+    admin_user.set_password(password)
+    db.session.add(admin_user)
+    db.session.commit()
+    print(f"Usuário administrador '{username}' criado com sucesso.")
+
 @app.cli.command("create-admin")
 @click.argument("username")
 @click.argument("password")
